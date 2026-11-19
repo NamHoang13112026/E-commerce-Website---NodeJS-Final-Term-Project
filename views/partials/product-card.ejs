@@ -1,0 +1,21 @@
+<div class="col">
+  <article class="card product-card h-100">
+    <a href="/products/<%= p.slug %>" class="product-card-img">
+      <img src="<%= p.image %>" alt="<%= p.name %>" loading="lazy">
+      <% if (p.stock === 0) { %><span class="badge text-bg-dark stock-badge">Hết hàng</span><% } %>
+    </a>
+    <div class="card-body d-flex flex-column">
+      <div class="small text-muted mb-1"><%= p.brand_name %> · <%= p.category_name %></div>
+      <h3 class="h6 card-title mb-1"><a href="/products/<%= p.slug %>" class="stretched-link text-reset text-decoration-none"><%= p.name %></a></h3>
+      <p class="small text-muted mb-2 line-clamp-2"><%= p.short_description %></p>
+      <div class="mt-auto">
+        <div class="rating small mb-1" title="<%= Number(p.avg_rating).toFixed(1) %>/5">
+          <%- stars(p.avg_rating) %> <span class="text-muted">(<%= p.rating_count %>)</span>
+        </div>
+        <div class="price">
+          <% if (p.min_price !== p.max_price) { %><span class="from">Từ</span> <% } %><%= formatPrice(p.min_price) %>
+        </div>
+      </div>
+    </div>
+  </article>
+</div>

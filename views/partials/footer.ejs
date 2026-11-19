@@ -1,0 +1,12 @@
+  </div>
+</main>
+<footer class="site-footer py-4 mt-4">
+  <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 small">
+    <span>© 2026 TechParts · Chuyên máy tính và linh kiện máy tính chính hãng</span>
+    <span class="opacity-75">Máy chủ xử lý: <%= instance %></span>
+  </div>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<% if (locals.scripts) { scripts.forEach(s => { %><script src="<%= s %>"></script><% }) } %>
+</body>
+</html>

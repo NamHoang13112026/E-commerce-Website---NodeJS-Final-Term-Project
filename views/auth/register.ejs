@@ -1,0 +1,28 @@
+<%- include('../partials/header') %>
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card auth-card"><div class="card-body p-4">
+      <h1 class="h4 mb-1">Tạo tài khoản</h1>
+      <p class="text-muted small mb-3">Chỉ cần email, họ tên và địa chỉ giao hàng. Chúng tôi sẽ gửi email để bạn đặt mật khẩu.</p>
+      <%- include('../partials/errors') %>
+      <form method="post" action="/register" novalidate>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="mb-3">
+          <label class="form-label" for="email">Email</label>
+          <input class="form-control" id="email" name="email" type="email" required autocomplete="email" maxlength="255" value="<%= values.email || '' %>">
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="full_name">Họ và tên</label>
+          <input class="form-control" id="full_name" name="full_name" required autocomplete="name" minlength="2" maxlength="120" value="<%= values.full_name || '' %>">
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="address">Địa chỉ giao hàng</label>
+          <textarea class="form-control" id="address" name="address" rows="2" required autocomplete="street-address" minlength="5" maxlength="300"><%= values.address || '' %></textarea>
+        </div>
+        <button class="btn btn-accent w-100" type="submit">Đăng ký</button>
+      </form>
+      <p class="small text-muted mt-3 mb-0">Đã có tài khoản? <a href="/login">Đăng nhập</a></p>
+    </div></div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

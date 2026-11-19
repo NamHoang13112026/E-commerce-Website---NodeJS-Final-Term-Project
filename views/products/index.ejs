@@ -1,0 +1,87 @@
+<%- include('../partials/header') %>
+<% const hasFilter = filters.brand.length || filters.min !== null || filters.max !== null || filters.rating || filters.tag; %>
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-0">
+      <% if (filters.q) { %>Kết quả cho “<%= filters.q %>”<% } else { %><%= categoryName || 'Tất cả sản phẩm' %><% } %>
+    </h1>
+    <div class="text-muted small"><%= total %> sản phẩm<% if (filters.tag) { %> · thẻ: <strong><%= filters.tag %></strong><% } %></div>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <button class="btn btn-outline-secondary d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel" aria-expanded="false" aria-controls="filterPanel">
+      <i class="bi bi-funnel"></i> Bộ lọc
+    </button>
+    <label class="visually-hidden" for="sortSelect">Sắp xếp</label>
+    <select id="sortSelect" class="form-select" onchange="location.href=this.value">
+      <% sorts.forEach(s => { %>
+        <option value="<%= qs({ sort: s.key, page: null }) %>" <%= s.key === filters.sort ? 'selected' : '' %>><%= s.label %></option>
+      <% }) %>
+    </select>
+  </div>
+</div>
+
+<div class="row g-4">
+  <aside class="col-lg-3">
+    <div class="collapse d-lg-block" id="filterPanel">
+      <form action="/products" method="get" class="filter-panel">
+        <% if (filters.q) { %><input type="hidden" name="q" value="<%= filters.q %>"><% } %>
+        <% if (filters.tag) { %><input type="hidden" name="tag" value="<%= filters.tag %>"><% } %>
+        <input type="hidden" name="sort" value="<%= filters.sort %>">
+
+        <h2 class="h6">Danh mục</h2>
+        <ul class="list-unstyled small mb-3">
+          <li><a class="<%= !filters.category ? 'fw-bold' : '' %>" href="<%= qs({ category: null, brand: [], page: null }) %>">Tất cả</a></li>
+          <% navCategories.forEach(c => { %>
+            <li><a class="<%= filters.category === c.slug ? 'fw-bold' : '' %>" href="<%= qs({ category: c.slug, brand: [], page: null }) %>"><%= c.name %></a></li>
+          <% }) %>
+        </ul>
+        <% if (filters.category) { %><input type="hidden" name="category" value="<%= filters.category %>"><% } %>
+
+        <h2 class="h6">Thương hiệu</h2>
+        <div class="mb-3 brand-list">
+          <% brands.forEach(b => { %>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="brand" value="<%= b.slug %>" id="b-<%= b.slug %>" <%= filters.brand.includes(b.slug) ? 'checked' : '' %>>
+              <label class="form-check-label small" for="b-<%= b.slug %>"><%= b.name %> <span class="text-muted">(<%= b.count %>)</span></label>
+            </div>
+          <% }) %>
+        </div>
+
+        <h2 class="h6">Khoảng giá (đ)</h2>
+        <div class="input-group input-group-sm mb-3">
+          <input type="number" class="form-control" name="min" min="0" step="1000" placeholder="Từ" value="<%= filters.min ?? '' %>" aria-label="Giá tối thiểu">
+          <span class="input-group-text">–</span>
+          <input type="number" class="form-control" name="max" min="0" step="1000" placeholder="Đến" value="<%= filters.max ?? '' %>" aria-label="Giá tối đa">
+        </div>
+
+        <h2 class="h6">Đánh giá</h2>
+        <select class="form-select form-select-sm mb-3" name="rating" aria-label="Đánh giá tối thiểu">
+          <option value="">Tất cả</option>
+          <% [4, 3].forEach(r => { %><option value="<%= r %>" <%= filters.rating === r ? 'selected' : '' %>>Từ <%= r %> sao trở lên</option><% }) %>
+        </select>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-accent btn-sm flex-grow-1" type="submit">Áp dụng</button>
+          <% if (hasFilter) { %><a class="btn btn-outline-secondary btn-sm" href="<%= qs({ brand: [], min: null, max: null, rating: null, tag: null, page: null }) %>">Xóa lọc</a><% } %>
+        </div>
+      </form>
+    </div>
+  </aside>
+
+  <section class="col-lg-9">
+    <% if (products.length) { %>
+      <div class="row row-cols-2 row-cols-md-3 g-3">
+        <% products.forEach(p => { %><%- include('../partials/product-card', { p }) %><% }) %>
+      </div>
+    <% } else { %>
+      <div class="text-center py-5 text-muted">
+        <i class="bi bi-search display-5"></i>
+        <p class="mt-2 mb-1">Không tìm thấy sản phẩm phù hợp.</p>
+        <p class="small">Hãy thử bỏ bớt bộ lọc hoặc dùng từ khóa khác.</p>
+        <a href="/products" class="btn btn-outline-secondary btn-sm">Xem tất cả sản phẩm</a>
+      </div>
+    <% } %>
+    <%- include('../partials/pagination') %>
+  </section>
+</div>
+<%- include('../partials/footer') %>

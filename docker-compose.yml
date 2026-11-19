@@ -1,0 +1,79 @@
+# Start everything with:  docker compose up -d
+# Website: http://localhost:8080   (nginx load-balances 2 app containers)
+x-app: &app
+  build: .
+  image: techparts-app
+  environment: &app-env
+    PORT: 3000
+    BASE_URL: ${BASE_URL:-http://localhost:8080}
+    DATABASE_URL: postgres://shop:shop@postgres:5432/shop
+    REDIS_URL: redis://redis:6379
+    SESSION_SECRET: ${SESSION_SECRET:-techparts-demo-secret-change-me}
+    ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@shop.local}
+    ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin@123}
+    SMTP_HOST: ${SMTP_HOST:-}
+    SMTP_PORT: ${SMTP_PORT:-587}
+    SMTP_SECURE: ${SMTP_SECURE:-false}
+    SMTP_USER: ${SMTP_USER:-}
+    SMTP_PASS: ${SMTP_PASS:-}
+    MAIL_FROM: ${MAIL_FROM:-TechParts <no-reply@techparts.local>}
+    DEV_SHOW_LINKS: ${DEV_SHOW_LINKS:-true}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: shop
+      POSTGRES_PASSWORD: shop
+      POSTGRES_DB: shop
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shop -d shop"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # One-shot job: creates tables and demo data, then exits
+  init:
+    <<: *app
+    command: ["node", "src/db/init.js"]
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Stateless web app (sessions are in Redis) - run 2 copies behind nginx
+  app:
+    <<: *app
+    deploy:
+      replicas: 2
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    expose:
+      - "3000"
+
+  # Front container: serves static files and load-balances requests to the app containers
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./public:/usr/share/nginx/html:ro
+    depends_on:
+      - app
+
+volumes:
+  pgdata:

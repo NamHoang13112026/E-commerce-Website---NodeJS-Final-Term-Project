@@ -1,0 +1,16 @@
+x<%- include('../partials/header') %>
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card auth-card"><div class="card-body p-4 text-center">
+      <i class="bi bi-envelope-check display-5 text-accent"></i>
+      <h1 class="h4 mt-2">Kiểm tra email của bạn</h1>
+      <p class="mb-1">Chúng tôi đã gửi liên kết đặt mật khẩu tới <strong><%= email %></strong>.</p>
+      <p class="text-muted small">Liên kết có hiệu lực trong 24 giờ.</p>
+      <% if (devLink) { %>
+        <div class="alert alert-warning small text-start">Chế độ phát triển (DEV_SHOW_LINKS): <a href="<%= devLink %>">mở liên kết đặt mật khẩu</a></div>
+      <% } %>
+      <a href="/products" class="btn btn-outline-secondary mt-2">Tiếp tục xem sản phẩm</a>
+    </div></div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

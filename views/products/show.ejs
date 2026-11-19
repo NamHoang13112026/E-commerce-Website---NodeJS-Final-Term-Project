@@ -1,0 +1,84 @@
+<%- include('../partials/header') %>
+<% const first = variants[0]; %>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb small">
+    <li class="breadcrumb-item"><a href="/products">Sản phẩm</a></li>
+    <li class="breadcrumb-item"><a href="/products?category=<%= product.category_slug %>"><%= product.category_name %></a></li>
+    <li class="breadcrumb-item active" aria-current="page"><%= product.name %></li>
+  </ol>
+</nav>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="gallery">
+      <img id="main-image" class="gallery-main" src="<%= images[0].url %>" alt="<%= product.name %>">
+      <div class="gallery-thumbs">
+        <% images.forEach((img, i) => { %>
+          <button type="button" class="thumb <%= i === 0 ? 'active' : '' %>" data-src="<%= img.url %>" aria-label="Xem ảnh <%= i + 1 %>">
+            <img src="<%= img.url %>" alt="" loading="lazy">
+          </button>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="text-muted small mb-1">
+      Thương hiệu: <a href="/products?brand=<%= product.brand_slug %>"><%= product.brand_name %></a>
+    </div>
+    <h1 class="h3"><%= product.name %></h1>
+    <div class="rating mb-3">
+      <%- stars(product.avg_rating) %>
+      <a href="#reviews" class="small text-muted ms-1"><%= Number(product.avg_rating).toFixed(1) %>/5 · <%= product.rating_count %> đánh giá</a>
+      <span class="text-muted small ms-2">Đã bán <%= product.sold_count %></span>
+    </div>
+
+    <div class="price price-lg mb-3" id="price"><%= formatPrice(first.price) %></div>
+
+    <fieldset class="mb-3">
+      <legend class="h6">Phiên bản</legend>
+      <div class="d-flex flex-wrap gap-2" id="variants" data-variants="<%= JSON.stringify(variants) %>">
+        <% variants.forEach((v, i) => { %>
+          <input type="radio" class="btn-check" name="variant" id="variant-<%= v.id %>" value="<%= v.id %>" <%= i === 0 ? 'checked' : '' %> autocomplete="off">
+          <label class="btn btn-outline-secondary variant-btn <%= v.stock === 0 ? 'text-decoration-line-through' : '' %>" for="variant-<%= v.id %>"><%= v.name %></label>
+        <% }) %>
+      </div>
+    </fieldset>
+
+    <div class="mb-3 small" id="stock"></div>
+
+    <div class="d-flex gap-2 mb-4">
+      <label class="visually-hidden" for="qty">Số lượng</label>
+      <input type="number" id="qty" class="form-control qty-input" value="1" min="1" max="1" inputmode="numeric">
+      <!-- Wired up in the cart step (19/11): POST /cart/items { variantId, quantity } -->
+      <button type="button" id="add-to-cart" class="btn btn-accent flex-grow-1" data-product-id="<%= product.id %>">
+        <i class="bi bi-cart-plus"></i> Thêm vào giỏ hàng
+      </button>
+    </div>
+
+    <% if (tags.length) { %>
+      <div class="mb-3">
+        <% tags.forEach(t => { %><a class="badge rounded-pill text-bg-light border me-1" href="/products?tag=<%= t.slug %>">#<%= t.name %></a><% }) %>
+      </div>
+    <% } %>
+
+    <h2 class="h6">Mô tả sản phẩm</h2>
+    <p class="description"><%= product.description %></p>
+  </div>
+</div>
+
+<section id="reviews" class="mt-5">
+  <h2 class="h5">Đánh giá và bình luận</h2>
+  <!-- Reviews, star ratings and realtime updates are built in step 11 (25/11) -->
+  <p class="text-muted">Chưa có bình luận nào.</p>
+</section>
+
+<% if (related.length) { %>
+  <section class="mt-5">
+    <h2 class="h5 mb-3">Sản phẩm cùng danh mục</h2>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+      <% related.forEach(p => { %><%- include('../partials/product-card', { p }) %><% }) %>
+    </div>
+  </section>
+<% } %>
+<%- include('../partials/footer', { scripts: ['/js/product.js'] }) %>

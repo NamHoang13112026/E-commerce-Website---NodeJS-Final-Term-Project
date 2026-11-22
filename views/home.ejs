@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<%# Banner đầu trang %>
+<section class="hero mb-4">
+  <div class="row align-items-center">
+    <div class="col-lg-7">
+      <p class="hero-eyebrow mb-2">TechParts · Máy tính &amp; linh kiện</p>
+      <h1 class="display-6 mb-3">Nâng cấp dàn máy của bạn với linh kiện chính hãng</h1>
+      <p class="lead mb-4">Laptop, màn hình, ổ cứng, RAM, CPU, card đồ họa và phụ kiện. Mua không cần đăng nhập, giao hàng toàn quốc.</p>
+      <div class="d-flex flex-wrap gap-2">
+        <a href="/products" class="btn btn-light btn-lg">Xem tất cả sản phẩm</a>
+        <a href="#sec-best" class="btn btn-outline-light btn-lg">Bán chạy nhất</a>
+      </div>
+    </div>
+    <div class="col-lg-5 d-none d-lg-block">
+      <div class="hero-chips">
+        <% navCategories.forEach(c => { %><a class="chip" href="/products?category=<%= c.slug %>"><%= c.name %></a><% }) %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# Dải ưu điểm %>
+<ul class="perks list-unstyled row row-cols-2 row-cols-md-4 g-2 mb-5">
+  <li class="col"><i class="bi bi-patch-check"></i> Hàng chính hãng</li>
+  <li class="col"><i class="bi bi-truck"></i> Giao hàng toàn quốc</li>
+  <li class="col"><i class="bi bi-shield-check"></i> Bảo hành 12–36 tháng</li>
+  <li class="col"><i class="bi bi-gift"></i> Tích điểm mỗi đơn hàng</li>
+</ul>
+
+<%# Mỗi mục: tiêu đề + lưới sản phẩm + phân trang riêng %>
+<% sections.forEach(s => { %>
+  <section class="mb-5" id="sec-<%= s.key %>">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+      <h2 class="section-title h4 mb-0"><i class="bi <%= s.icon %>"></i> <%= s.title %></h2>
+      <a href="<%= s.link %>" class="small">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+      <% s.rows.forEach(p => { %><%- include('partials/product-card', { p }) %><% }) %>
+    </div>
+    <%- include('partials/pagination', { page: s.page, totalPages: s.totalPages, pages: s.pages, pageUrl: n => pageUrl(s.key, n) }) %>
+  </section>
+<% }) %>
+
+<%- include('partials/footer') %>

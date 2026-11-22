@@ -21,7 +21,7 @@
 </div>
 
 <div class="row g-4">
-  <aside class="col-lg-3">
+  <!-- <aside class="col-lg-3">
     <div class="collapse d-lg-block" id="filterPanel">
       <form action="/products" method="get" class="filter-panel">
         <% if (filters.q) { %><input type="hidden" name="q" value="<%= filters.q %>"><% } %>
@@ -55,6 +55,52 @@
         </div>
 
         <h2 class="h6">Đánh giá</h2>
+        <select class="form-select form-select-sm mb-3" name="rating" aria-label="Đánh giá tối thiểu">
+          <option value="">Tất cả</option>
+          <% [4, 3].forEach(r => { %><option value="<%= r %>" <%= filters.rating === r ? 'selected' : '' %>>Từ <%= r %> sao trở lên</option><% }) %>
+        </select>
+
+        <div class="d-flex gap-2">
+          <button class="btn btn-accent btn-sm flex-grow-1" type="submit">Áp dụng</button>
+          <% if (hasFilter) { %><a class="btn btn-outline-secondary btn-sm" href="<%= qs({ brand: [], min: null, max: null, rating: null, tag: null, page: null }) %>">Xóa lọc</a><% } %>
+        </div>
+      </form>
+    </div>
+  </aside> -->
+    <aside class="col-lg-3">
+    <div class="collapse d-lg-block" id="filterPanel">
+      <form action="/products" method="get" class="filter-panel">
+        <% if (filters.q) { %><input type="hidden" name="q" value="<%= filters.q %>"><% } %>
+        <% if (filters.tag) { %><input type="hidden" name="tag" value="<%= filters.tag %>"><% } %>
+        <input type="hidden" name="sort" value="<%= filters.sort %>">
+
+        <h2 class="filter-title">Danh mục</h2>
+        <ul class="cat-list list-unstyled mb-3">
+          <li><a class="<%= !filters.category ? 'active' : '' %>" href="<%= qs({ category: null, brand: [], page: null }) %>">Tất cả</a></li>
+          <% navCategories.forEach(c => { %>
+            <li><a class="<%= filters.category === c.slug ? 'active' : '' %>" href="<%= qs({ category: c.slug, brand: [], page: null }) %>"><%= c.name %></a></li>
+          <% }) %>
+        </ul>
+        <% if (filters.category) { %><input type="hidden" name="category" value="<%= filters.category %>"><% } %>
+
+        <h2 class="filter-title">Thương hiệu</h2>
+        <div class="mb-3 brand-list">
+          <% brands.forEach(b => { %>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="brand" value="<%= b.slug %>" id="b-<%= b.slug %>" <%= filters.brand.includes(b.slug) ? 'checked' : '' %>>
+              <label class="form-check-label small" for="b-<%= b.slug %>"><%= b.name %> <span class="text-muted">(<%= b.count %>)</span></label>
+            </div>
+          <% }) %>
+        </div>
+
+        <h2 class="filter-title">Khoảng giá (đ)</h2>
+        <div class="input-group input-group-sm mb-3">
+          <input type="number" class="form-control" name="min" min="0" step="1000" placeholder="Từ" value="<%= filters.min ?? '' %>" aria-label="Giá tối thiểu">
+          <span class="input-group-text">–</span>
+          <input type="number" class="form-control" name="max" min="0" step="1000" placeholder="Đến" value="<%= filters.max ?? '' %>" aria-label="Giá tối đa">
+        </div>
+
+        <h2 class="filter-title">Đánh giá</h2>
         <select class="form-select form-select-sm mb-3" name="rating" aria-label="Đánh giá tối thiểu">
           <option value="">Tất cả</option>
           <% [4, 3].forEach(r => { %><option value="<%= r %>" <%= filters.rating === r ? 'selected' : '' %>>Từ <%= r %> sao trở lên</option><% }) %>

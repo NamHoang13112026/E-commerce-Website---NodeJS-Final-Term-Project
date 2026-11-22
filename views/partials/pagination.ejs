@@ -1,20 +1,20 @@
-<%# Always shows the page numbers, even when there is only one page %>
+<%# Luôn hiện số trang, kể cả khi chỉ có 1 trang (đề bài yêu cầu) %>
 <nav aria-label="Phân trang" class="mt-4">
   <ul class="pagination justify-content-center flex-wrap">
     <li class="page-item <%= page <= 1 ? 'disabled' : '' %>">
-      <a class="page-link" href="<%= qs({ page: page - 1 }) %>" aria-label="Trang trước">&laquo;</a>
+      <a class="page-link" href="<%= pageUrl(page - 1) %>" aria-label="Trang trước">&laquo;</a>
     </li>
     <% pages.forEach(n => { %>
       <% if (n === '…') { %>
         <li class="page-item disabled"><span class="page-link">…</span></li>
       <% } else { %>
         <li class="page-item <%= n === page ? 'active' : '' %>" <%- n === page ? 'aria-current="page"' : '' %>>
-          <a class="page-link" href="<%= qs({ page: n }) %>"><%= n %></a>
+          <a class="page-link" href="<%= pageUrl(n) %>"><%= n %></a>
         </li>
       <% } %>
     <% }) %>
     <li class="page-item <%= page >= totalPages ? 'disabled' : '' %>">
-      <a class="page-link" href="<%= qs({ page: page + 1 }) %>" aria-label="Trang sau">&raquo;</a>
+      <a class="page-link" href="<%= pageUrl(page + 1) %>" aria-label="Trang sau">&raquo;</a>
     </li>
   </ul>
 </nav>

@@ -63,7 +63,8 @@ async function main() {
     next();
   });
 
-  app.get('/', (req, res) => res.redirect('/products'));   // landing page is built in step 6
+  // app.get('/', (req, res) => res.redirect('/products'));   // landing page is built in step 6
+  app.use('/', require('./routes/home'));                    // landing page
   app.use('/products', require('./routes/products'));
   app.use('/', require('./routes/auth'));
 
